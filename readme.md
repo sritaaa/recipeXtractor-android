@@ -3,8 +3,9 @@
 Android application that transforms YouTube cooking videos into structured recipes using Google Gemini 3 AI.
 
 ## 🎥 Demo
-
-[Demo Video Link - Add your YouTube link here]
+```bash
+https://youtube.com/shorts/koaSXtNql_I?feature=share
+```
 
 ## ✨ Features
 
@@ -12,11 +13,11 @@ Android application that transforms YouTube cooking videos into structured recip
 - AI-powered using Google Gemini 3
 - Clean, structured ingredient lists
 - Step-by-step cooking instructions
-- Material Design UI
+
 
 ## 🛠️ Tech Stack
 
-- **Language**: Java/Kotlin
+- **Language**: Kotlin
 - **Min SDK**: Android 7.0 (API 24)
 - **Networking**: Retrofit
 - **Backend**: Flask server with Gemini 3 API
@@ -25,14 +26,14 @@ Android application that transforms YouTube cooking videos into structured recip
 
 - Android Studio
 - Android device or emulator (API 24+)
-- Backend server running ([Backend Repo](https://github.com/YOUR_USERNAME/YOUR_BACKEND_REPO_NAME))
+- Backend server running ([Backend Repo](https://github.com/sritaaa/recipe-backend))
 
 ## 🚀 Setup Instructions
 
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/YOUR_USERNAME/recipe-extractor-android.git
-cd recipe-extractor-android
+cd recipXtractor-android
 ```
 
 ### 2. Open in Android Studio
@@ -44,7 +45,7 @@ cd recipe-extractor-android
 
 ### 3. Configure Backend URL
 
-Find the file where you set your API base URL (usually something like `ApiConstants.java` or in your Retrofit setup) and update:
+Find the file where you set your API base URL and update:
 ```java
 // For Android Emulator
 public static final String BASE_URL = "http://10.0.2.2:5000/";
@@ -76,7 +77,7 @@ public static final String BASE_URL = "http://192.168.X.X:5000/";
 
 ## 🔗 Related Repositories
 
-- **Backend Server**: [Link to your Flask backend repo]
+- **Backend Server**: [https://github.com/sritaaa/recipe-backend]
 
 ## 📝 Notes for Setup
 
