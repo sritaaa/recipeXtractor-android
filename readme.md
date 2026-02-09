@@ -1,4 +1,4 @@
-# Recipe Extractor Android App
+# RecipXtractor Android App
 
 Android application that transforms YouTube cooking videos into structured recipes using Google Gemini 3 AI.
 
