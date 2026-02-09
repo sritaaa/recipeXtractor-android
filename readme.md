@@ -33,7 +33,7 @@ https://youtube.com/shorts/koaSXtNql_I?feature=share
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/YOUR_USERNAME/recipe-extractor-android.git
-cd recipXtractor-android
+cd recipeXtractor-android
 ```
 
 ### 2. Open in Android Studio
