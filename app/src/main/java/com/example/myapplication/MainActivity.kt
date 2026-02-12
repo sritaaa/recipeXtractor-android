@@ -1,12 +1,20 @@
 package com.example.myapplication
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.network.RecipeApi
+import com.revenuecat.purchases.CustomerInfo
+import com.revenuecat.purchases.Purchases
+import com.revenuecat.purchases.PurchaseParams
+import com.revenuecat.purchases.getCustomerInfoWith
+import com.revenuecat.purchases.getOfferingsWith
+import com.revenuecat.purchases.purchaseWith
 import kotlinx.coroutines.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,8 +24,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var resultScrollView: ScrollView
     private lateinit var resultContainer: LinearLayout
 
-    // ✅ Use RecipeApi directly (no Retrofit needed)
     private val api = RecipeApi()
+
+    private lateinit var prefs: SharedPreferences
+    private val FREE_EXTRACTIONS_LIMIT = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,14 +39,72 @@ class MainActivity : AppCompatActivity() {
         resultScrollView = findViewById(R.id.resultScrollView)
         resultContainer = findViewById(R.id.resultContainer)
 
+        prefs = getSharedPreferences("RecipeApp", MODE_PRIVATE)
+
         extractButton.setOnClickListener {
             val url = urlInput.text.toString().trim()
             if (url.isEmpty()) {
                 Toast.makeText(this, "Enter YouTube URL", Toast.LENGTH_SHORT).show()
             } else {
-                extractRecipe(url)
+                checkAccessAndExtract(url)
             }
         }
+    }
+
+    private fun checkAccessAndExtract(input: String) {
+        Purchases.sharedInstance.getCustomerInfoWith(
+            onSuccess = { customerInfo ->
+                val allEntitlements = customerInfo.entitlements.all
+                val premiumEntitlement = allEntitlements["Premium"]
+                val isPremium = premiumEntitlement?.isActive == true
+
+                if (isPremium) {
+                    extractRecipe(input)
+                } else {
+                    val usedExtractions = prefs.getInt("extraction_count", 0)
+
+                    if (usedExtractions < FREE_EXTRACTIONS_LIMIT) {
+                        prefs.edit().putInt("extraction_count", usedExtractions + 1).apply()
+                        extractRecipe(input)
+                        Toast.makeText(this, "Free trial used! Subscribe for unlimited recipes", Toast.LENGTH_LONG).show()
+                    } else {
+                        showPaywall()
+                    }
+                }
+            },
+            onError = { error ->
+                Toast.makeText(this, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
+
+    private fun showPaywall() {
+        Purchases.sharedInstance.getOfferingsWith(
+            onSuccess = { offerings ->
+                val packageToPurchase = offerings.current?.availablePackages?.firstOrNull()
+
+                if (packageToPurchase != null) {
+                    Purchases.sharedInstance.purchaseWith(
+                        purchaseParams = PurchaseParams.Builder(this, packageToPurchase).build(),
+                        onSuccess = { _, customerInfo ->
+                            val allEntitlements = customerInfo.entitlements.all
+                            val premiumEntitlement = allEntitlements["Premium"]
+                            if (premiumEntitlement?.isActive == true) {
+                                Toast.makeText(this, "Welcome to Premium! 🎉", Toast.LENGTH_LONG).show()
+                            }
+                        },
+                        onError = { error, _ ->
+                            Toast.makeText(this, "Purchase cancelled", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                } else {
+                    Toast.makeText(this, "Subscribe to continue extracting recipes!", Toast.LENGTH_LONG).show()
+                }
+            },
+            onError = { error ->
+                Toast.makeText(this, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 
     private fun extractRecipe(input: String) {
@@ -50,10 +118,8 @@ class MainActivity : AppCompatActivity() {
                 val isYouTubeUrl = input.contains("youtube.com") || input.contains("youtu.be")
 
                 val response = if (isYouTubeUrl) {
-                    // Call backend for YouTube URLs
                     api.extractRecipeFromYouTube(input)
                 } else {
-                    // Direct text processing
                     api.extractRecipeFromText(input)
                 }
 
