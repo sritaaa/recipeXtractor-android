@@ -4,7 +4,7 @@ Android application that transforms YouTube cooking videos into structured recip
 
 ## 🎥 Demo
 ```bash
-https://youtube.com/shorts/koaSXtNql_I?feature=share
+https://youtu.be/UkLFfd0lO5c
 ```
 
 ## ✨ Features
@@ -74,6 +74,7 @@ public static final String BASE_URL = "http://192.168.X.X:5000/";
 4. Tap "Extract Recipe"
 5. Wait 2-3 minutes for processing
 6. View your structured recipe!
+7. Only one free extraction after that subscribe to premium at $0.99 a month
 
 ## 🔗 Related Repositories
 
